@@ -1,4 +1,3 @@
-# SCORE-BOARD
 # Score Board: Broken Access Control / Security Through Obscurity
 
 ## Challenge: Score Board
