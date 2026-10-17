@@ -1,0 +1,133 @@
+# OWASP Juice Shop — Unvalidated Redirects
+
+## 1. Overview
+
+This section documents practical testing of redirect-related security weaknesses in OWASP Juice Shop, an intentionally vulnerable web application used for learning web application security.
+
+The focus is on **Allowlist Bypass** and **Outdated Allowlist**. These challenges demonstrate how insufficient validation of redirect destinations can allow navigation to unintended pages or destinations that are no longer approved.
+
+**Lab environment:** Kali Linux  
+**Target application:** OWASP Juice Shop  
+**Testing scope:** Authorized local lab  
+**Category:** Redirect validation and allowlist enforcement  
+**Tools:** Web browser, browser developer tools, and optionally Burp Suite
+
+## 2. Objectives
+
+- Understand how redirect allowlists work.
+- Investigate weaknesses in redirect destination validation.
+- Examine how outdated allowlists can introduce security risks.
+- Observe how the application handles approved and unapproved redirect destinations.
+- Recommend secure redirect validation practices.
+
+## 3. Challenges
+
+| Challenge | Objective | Difficulty |
+|---|---|---|
+| Allowlist Bypass | Redirect to a page that should not be permitted by the application's redirect rules. | ⭐⭐⭐⭐ |
+| Outdated Allowlist | Redirect to a cryptocurrency address that is no longer promoted by the application. | ⭐ |
+
+---
+
+## 4. Challenge 1: Allowlist Bypass
+
+### Objective
+Enforce a redirect to a page that the application is not supposed to redirect to.
+
+### Vulnerability Description
+An allowlist defines which destinations an application permits users to access through a redirect mechanism. If the application validates redirect URLs incorrectly, an attacker may be able to bypass these restrictions.
+
+Potential weaknesses include incomplete URL parsing, inconsistent normalization, insufficient validation of destination hosts, and reliance on client-side checks.
+
+A secure implementation must validate the final destination on the server or use a safe, predefined destination identifier rather than trusting arbitrary user-supplied URLs.
+
+### Testing Methodology
+1. Open the OWASP Juice Shop application.
+2. Identify the feature or URL parameter responsible for redirecting users.
+3. Observe how a normal redirect is initiated.
+4. Inspect the redirect request and response using browser developer tools or Burp Suite.
+5. Determine how the application validates the requested destination.
+6. In the authorized lab, test whether a destination outside the permitted allowlist can be reached.
+7. Record the observed behavior and capture evidence of the result.
+
+### Expected Security Finding
+If the application redirects to a destination that should be prohibited, its allowlist validation may be incomplete or incorrectly implemented.
+
+### Potential Impact
+- Redirecting users to untrusted websites.
+- Phishing and credential theft opportunities.
+- Abuse of trusted application links.
+- Reduced user confidence in the application's navigation.
+
+### Recommended Remediation
+- Validate redirect destinations against a strict server-side allowlist.
+- Prefer predefined destination identifiers over arbitrary URLs.
+- Parse and normalize URLs consistently before validating them.
+- Reject unexpected schemes, hosts, ports, and URL formats.
+- Avoid relying exclusively on client-side validation.
+- Test redirect logic against malformed and unexpected inputs.
+
+**Result:** [Pending testing]
+
+**Evidence:** [Insert screenshot or sanitized HTTP request/response]
+
+---
+
+## 5. Challenge 2: Outdated Allowlist
+
+### Objective
+Redirect to a cryptocurrency address that the application no longer promotes.
+
+### Vulnerability Description
+Applications may maintain allowlists containing approved destinations for redirects, promotions, or external links. When these lists are not updated as application requirements change, destinations that should no longer be accessible may remain permitted.
+
+This challenge illustrates the importance of maintaining redirect policies and removing obsolete destinations.
+
+The presence of an outdated entry is not automatically a vulnerability in every application; its impact depends on the destination, the surrounding functionality, and the application's intended security policy.
+
+### Testing Methodology
+1. Open OWASP Juice Shop and identify the relevant redirect or promotional functionality.
+2. Inspect how the application handles links to cryptocurrency-related destinations.
+3. Observe the redirect destination and any associated parameters.
+4. Examine how the application determines whether a destination is permitted.
+5. Within the lab, test whether a destination that should no longer be promoted remains accessible through the redirect mechanism.
+6. Record the outcome and capture the relevant evidence.
+
+### Expected Security Finding
+The application may continue to permit a redirect to a cryptocurrency destination that is no longer part of its intended promotional configuration.
+
+### Potential Impact
+- Navigation to obsolete or unintended destinations.
+- Confusion about which destinations the application officially endorses.
+- Potential exposure to fraudulent or misleading destinations if the permitted entry is compromised or inappropriate.
+- Inconsistent behavior between the application's current configuration and its redirect rules.
+
+### Recommended Remediation
+- Review and update redirect allowlists during application maintenance.
+- Remove obsolete destinations promptly.
+- Maintain a single authoritative configuration for approved redirect destinations.
+- Apply server-side validation before performing redirects.
+- Audit promotional links and external destinations regularly.
+- Add automated tests to ensure retired destinations are rejected.
+
+**Result:** [Pending testing]
+
+**Evidence:** [Insert screenshot or sanitized HTTP request/response]
+
+---
+
+## 6. General Lessons Learned
+
+These challenges highlight several important security principles:
+
+1. **Validate redirect destinations.** Never trust a destination simply because it was supplied by the client.
+2. **Use strict allowlists.** Define precisely which destinations are permitted.
+3. **Normalize URLs consistently.** Differences in URL parsing can cause validation errors.
+4. **Maintain security configuration.** Obsolete allowlist entries should be removed when no longer required.
+5. **Test negative cases.** Verify that prohibited destinations are rejected, not just that legitimate redirects work.
+
+## 7. Conclusion
+
+The Allowlist Bypass and Outdated Allowlist challenges demonstrate how redirect logic and configuration management can affect web application security.
+
+Testing these scenarios helps develop practical skills in inspecting HTTP requests, understanding URL validation, identifying unexpected redirect behavior
