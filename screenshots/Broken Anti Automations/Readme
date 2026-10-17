@@ -1,0 +1,225 @@
+# OWASP Juice Shop — Broken Anti Automation
+
+## 1. Overview
+
+This project documents my practical penetration-testing exercises on **OWASP Juice Shop**, an intentionally vulnerable web application used to learn web application security.
+
+The focus is on the **Broken Anti Automation** challenge category, which demonstrates how insufficient server-side controls can allow users to perform actions repeatedly, access unintended resources, or abuse account-related functionality.
+
+**Lab environment:** Kali Linux  
+**Target application:** OWASP Juice Shop  
+**Testing scope:** Local, authorized training environment  
+**Category:** Broken Anti Automation  
+**Tools:** Web browser, browser developer tools, and optionally Burp Suite
+
+## 2. Objectives
+
+The objectives of this exercise are to:
+
+- Understand how broken anti-automation controls affect web applications.
+- Investigate weaknesses in CAPTCHA enforcement and request-rate limiting.
+- Examine how applications handle repeated review interactions.
+- Explore unintended exposure of language resources.
+- Understand security risks associated with account-recovery mechanisms.
+- Recommend appropriate mitigations for the identified weaknesses.
+
+## 3. Challenges
+
+| Challenge | Objective | Difficulty |
+|---|---|---|
+| CAPTCHA Bypass | Submit 10 or more customer feedback entries within 20 seconds. | ⭐⭐⭐ |
+| Extra Language | Retrieve the language file that was not included in production. | ⭐⭐⭐⭐⭐ |
+| Multiple Likes | Like a review at least three times as the same user. | ⭐⭐⭐⭐⭐⭐ |
+| Reset Morty's Password | Complete the password-reset challenge using the obfuscated answer to Morty's security question. | ⭐⭐⭐⭐⭐ |
+
+---
+
+## 4. Challenge 1: CAPTCHA Bypass
+
+### Objective
+Submit 10 or more customer feedback entries within 20 seconds.
+
+### Vulnerability Description
+CAPTCHA mechanisms are intended to help distinguish legitimate human interactions from automated activity. However, an application may remain vulnerable if CAPTCHA verification is missing, incorrectly implemented, or enforced only on the client side.
+
+A CAPTCHA displayed in the browser does not provide effective protection unless the server validates the challenge before processing the submitted request.
+
+### Testing Methodology
+1. Open the Juice Shop application and navigate to the customer feedback functionality.
+2. Examine the feedback submission process and identify whether CAPTCHA verification is required.
+3. Observe the HTTP request generated when submitting feedback.
+4. Inspect whether the server validates CAPTCHA responses and limits repeated submissions.
+5. Within the authorized lab, test whether the challenge's submission threshold can be reached within the specified time.
+6. Record the observed result and capture supporting evidence.
+
+### Expected Security Finding
+If the required number of submissions can be completed without effective CAPTCHA enforcement or appropriate request throttling, the application may be vulnerable to automated form submissions.
+
+### Potential Impact
+- Spam and fraudulent feedback.
+- Increased application workload.
+- Manipulation of feedback data.
+- Abuse of publicly accessible forms.
+
+### Recommended Remediation
+- Validate CAPTCHA tokens on the server.
+- Apply rate limiting to feedback submissions.
+- Introduce appropriate request quotas and abuse detection.
+- Log suspicious submission patterns.
+- Use additional controls where automated abuse could affect business operations.
+
+**Result:** [Pending testing]
+
+**Evidence:** [Insert screenshot or sanitized request/response]
+
+---
+
+## 5. Challenge 2: Extra Language
+
+### Objective
+Retrieve a language file that was not intended to be included in the production application.
+
+### Vulnerability Description
+Web applications frequently store translation files and other static resources in publicly accessible directories. If development-only or unintended resources remain deployed, users may discover files that reveal internal implementation details or information not intended for public release.
+
+The security impact depends on the file's contents and whether it exposes sensitive information.
+
+### Testing Methodology
+1. Inspect the application's language-selection functionality.
+2. Use browser developer tools to observe how translation resources are requested.
+3. Examine publicly accessible language-resource paths and naming conventions.
+4. Identify whether additional language files are exposed beyond those used by the application.
+5. Retrieve the relevant resource in the authorized lab and document the response.
+6. Review the file for unintended information exposure without disclosing real credentials or secrets.
+
+### Expected Security Finding
+An unintended language resource may remain accessible even though it is not offered through the application's normal interface.
+
+### Potential Impact
+- Exposure of development artifacts.
+- Disclosure of internal application information.
+- Increased attack surface.
+- Accidental exposure of sensitive information if such data was included in the resource.
+
+### Recommended Remediation
+- Include only required assets in production deployments.
+- Review static files during release builds.
+- Avoid storing credentials or secrets in translation resources.
+- Apply appropriate access controls to non-public resources.
+- Add automated checks for unintended files in deployment pipelines.
+
+**Result:** [Pending testing]
+
+**Evidence:** [Insert resource path and screenshot]
+
+---
+
+## 6. Challenge 3: Multiple Likes
+
+### Objective
+Like a review at least three times as the same user.
+
+### Vulnerability Description
+Applications may implement restrictions intended to prevent users from repeatedly liking the same review. If those restrictions are enforced only by the user interface, a user may be able to repeat the underlying request.
+
+The server should enforce the application's voting rules rather than relying on browser-side controls.
+
+### Testing Methodology
+1. Sign in to the Juice Shop training application.
+2. Navigate to a review and observe the normal like interaction.
+3. Inspect the network request generated by the like action.
+4. Examine how the application represents the review, the authenticated user, and the like operation.
+5. Test whether repeated requests are accepted for the same user and review.
+6. Record the server responses and verify whether the challenge's required condition has been satisfied.
+
+### Expected Security Finding
+If the server accepts multiple likes from the same user for the same review when only one should be allowed, the application has insufficient enforcement of its voting rules.
+
+### Potential Impact
+- Artificially inflated review popularity.
+- Manipulation of user ratings and rankings.
+- Reduced trust in feedback systems.
+- Unfair influence over purchasing decisions.
+
+### Recommended Remediation
+- Enforce one-like-per-user-per-review rules on the server.
+- Use database constraints or equivalent atomic enforcement where appropriate.
+- Authenticate and authorize every voting request.
+- Validate state transitions and handle concurrent requests safely.
+- Monitor suspicious voting patterns.
+
+**Result:** [Pending testing]
+
+**Evidence:** [Insert screenshot or sanitized request/response]
+
+---
+
+## 7. Challenge 4: Reset Morty's Password
+
+### Objective
+Reset Morty's password through the Forgot Password mechanism using the obfuscated answer to his security question.
+
+### Vulnerability Description
+Password-recovery systems are security-sensitive because they provide an alternative route to account access. Weak security questions, predictable answers, reversible obfuscation, or insufficient verification can allow unauthorized password resets.
+
+Obfuscation should not be treated as a substitute for secure storage or strong identity verification.
+
+### Testing Methodology
+1. Open the application's Forgot Password functionality.
+2. Identify the information requested by the recovery workflow.
+3. Examine how the application presents the security question and processes the submitted answer.
+4. Within the authorized challenge, investigate the provided obfuscated answer and determine whether the recovery mechanism validates it securely.
+5. Submit the appropriate answer through the normal recovery interface.
+6. Verify the result and document the relevant evidence without accessing unrelated accounts.
+
+### Expected Security Finding
+The challenge demonstrates the risks of relying on a weak or improperly protected security-question mechanism to authorize password changes.
+
+### Potential Impact
+- Unauthorized password resets.
+- Account takeover.
+- Exposure of personal information.
+- Loss of account integrity and user trust.
+
+### Recommended Remediation
+- Prefer secure, time-limited password-reset tokens delivered through verified channels.
+- Do not rely on security questions as the sole authentication factor.
+- Apply rate limiting and abuse detection to recovery requests.
+- Invalidate reset tokens after use and enforce short expiration periods.
+- Notify users when their passwords are changed.
+- Store authentication secrets using appropriate cryptographic protections.
+
+**Result:** [Pending testing]
+
+**Evidence:** [Insert screenshot of the challenge outcome, with sensitive information redacted]
+
+---
+
+## 8. General Lessons Learned
+
+These challenges illustrate several important web application security principles:
+
+1. **Client-side controls are not security boundaries.** Important validation must occur on the server.
+2. **Rate limiting matters.** Sensitive actions should have reasonable limits to reduce automated abuse.
+3. **Public resources should be reviewed.** Unintended files can increase the application's attack surface.
+4. **Business rules require server-side enforcement.** A user interface restriction is ineffective if the underlying operation can be repeated without validation.
+5. **Account recovery must be secure.** Password-reset workflows should resist guessing, manipulation, and unauthorized access.
+
+## 9. Conclusion
+
+The Broken Anti Automation exercises in OWASP Juice Shop provide practical examples of how inadequate validation, weak abuse prevention, unintended resource exposure, and insecure recovery mechanisms can undermine web application security.
+
+By completing these challenges, I aim to improve my understanding of HTTP requests, browser developer tools, application behavior, and secure server-side validation.
+
+This exercise is part of my ongoing learning in web application penetration testing and the OWASP Top 10 security concepts.
+
+## 10. References
+
+- [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/)
+- [OWASP Juice Shop Project Repository](https://github.com/juice-shop/juice-shop)
+- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
+- [OWASP Automated Threats to Web Applications](https://owasp.org/www-project-automated-threats-to-web-applications/)
+
+---
+
+**Disclaimer:** All testing described in this report is intended for the deliberately vulnerable OWASP Juice Shop lab or another explicitly authorized environment. No unrelated systems or accounts should be tested.
