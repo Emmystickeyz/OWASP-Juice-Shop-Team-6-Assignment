@@ -10,7 +10,7 @@ Challenges attempted in this category: **11** (3 chatbot-based challenges — Ch
 
 ## 1. Login Admin ✅ (Solved)
 
-**Difficulty:** ★★
+## Difficulty: ⭐⭐
 **Description:** Log in with the administrator's user account.
 
 ### Vulnerability
