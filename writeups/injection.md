@@ -1,6 +1,6 @@
 # Injection
 
-OWASP Category: **A03:2021 – Injection**
+## OWASP Category: **A03:2021 – Injection**
 
 This category covers vulnerabilities where untrusted user input is passed directly into an interpreter (SQL, NoSQL, OS commands, templates, etc.) without proper validation or sanitization, allowing an attacker to alter the intended logic of a query or command.
 
