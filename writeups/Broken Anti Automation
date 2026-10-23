@@ -1,0 +1,72 @@
+# Broken Anti Automation
+
+**Category summary:** Broken Anti Automation occurs when an application fails to adequately limit or verify repeated actions, automated submissions, or abuse of functionality. Across this category, the challenges below explore weaknesses in CAPTCHA enforcement, rate limiting, and restrictions on repeated user actions. Each challenge documents the observed behavior, technical reason, potential impact, and recommended fix.
+
+---
+
+## 1. CAPTCHA Bypass
+
+**Difficulty:** ⭐⭐
+
+**Steps:** Submitted feedback repeatedly within a short period to test whether the application's CAPTCHA or anti-automation controls could be bypassed.
+
+**Why it worked:** The application did not effectively enforce its anti-automation protections against repeated feedback submissions within the tested time window.
+
+**Impact:** Attackers may automate feedback submissions, pollute user-generated content, and consume application resources.
+
+**Fix:** Validate CAPTCHA responses server-side, apply rate limits to sensitive endpoints, and monitor repeated submissions for suspicious patterns.
+
+---
+
+## 2. Extra Language
+
+**Difficulty:** ⭐
+
+**Steps:** Investigated the application's available language resources and retrieved a language file that was not intended to be available in the production environment.
+
+**Why it worked:** An unnecessary language resource remained accessible, indicating insufficient control over which application resources were exposed.
+
+**Impact:** Unintended resources may reveal application content or implementation details. The actual impact depends on the information contained in the file.
+
+**Fix:** Remove unused resources from production builds, restrict access to sensitive files, and ensure deployment configurations expose only necessary assets.
+
+---
+
+## 3. Multiple Likes
+
+**Difficulty:** ⭐⭐
+
+**Steps:** Tested whether the same authenticated user could like the same review multiple times.
+
+**Why it worked:** The application did not adequately enforce a one-like-per-user rule for the review being tested.
+
+**Impact:** Repeated likes can manipulate review popularity, distort ratings or rankings, and reduce trust in user-generated engagement metrics.
+
+**Fix:** Enforce uniqueness and authorization rules server-side, such as allowing only one like per user per review. Do not rely exclusively on client-side button states.
+
+---
+
+## 4. Reset Morty's Password
+
+**Difficulty:** ⭐⭐⭐
+
+**Steps:** Investigated the password-reset process and tested whether the account's security question could be answered using information obtainable through the application's exposed or obfuscated data.
+
+**Why it worked:** The password-reset mechanism relied on a security answer that could be recovered or guessed rather than a sufficiently secure verification process.
+
+**Impact:** An attacker may be able to take over the affected account by resetting its password without the account owner's authorization.
+
+**Fix:** Use secure, time-limited, single-use password-reset tokens delivered through a verified channel. Avoid relying on easily discoverable security-question answers, and apply rate limits to reset attempts.
+
+---
+
+## Summary
+
+The Broken Anti Automation challenges demonstrate how insufficient enforcement of application rules can enable repeated actions, resource exposure, manipulation of engagement metrics, or account compromise.
+
+**Key lessons:**
+- Enforce protections on the server, not only in the interface.
+- Apply rate limits to sensitive actions and authentication-related workflows.
+- Remove unnecessary resources from production deployments.
+- Validate user actions and enforce uniqueness constraints server-side.
+- Design password-reset workflows to resist guessing, replay, and account takeover.
