@@ -1,0 +1,45 @@
+# Unvalidated Redirects
+
+**Category summary:** Unvalidated Redirects occur when an application redirects users to destinations without adequately validating whether those destinations are trusted. This can allow attackers to manipulate redirect behavior, send users to untrusted websites, or exploit outdated redirect rules. The challenges below document the observed behavior, technical reason, potential impact, and recommended fix.
+
+---
+
+## 1. Allowlist Bypass
+
+**Difficulty:** ⭐⭐
+
+**Steps:** Tested the application's redirect functionality with a destination that was not supposed to be permitted by its URL allowlist.
+
+**Why it worked:** The redirect validation logic could be bypassed, allowing a destination outside the intended set of trusted URLs to be accepted.
+
+**Impact:** Attackers may craft links that appear to originate from a trusted application but redirect victims to malicious websites, potentially enabling phishing or credential theft.
+
+**Fix:** Validate redirect destinations server-side against a strict allowlist of trusted origins. Prefer predefined destination identifiers over arbitrary user-supplied URLs, and reject ambiguous or malformed destinations.
+
+---
+
+## 2. Outdated Allowlist
+
+**Difficulty:** ⭐⭐
+
+**Steps:** Examined the application's redirect validation rules and tested a destination associated with an outdated cryptocurrency address or redirect entry.
+
+**Why it worked:** The application's allowlist retained an outdated destination, meaning the validation rules no longer accurately represented the intended trusted destinations.
+
+**Impact:** Users may be redirected to an unintended or untrusted destination. In a cryptocurrency-related workflow, this could expose users to scams or financial loss if they trust the destination without verifying it.
+
+**Fix:** Regularly review and update redirect allowlists. Remove obsolete destinations, validate the complete destination origin rather than relying on loose string matching, and require explicit approval before adding new redirect targets.
+
+---
+
+## Summary
+
+The Unvalidated Redirects challenges demonstrate how weak or outdated destination validation can undermine user trust and expose users to phishing or other redirection-based attacks.
+
+**Key lessons:**
+- Validate redirect destinations on the server.
+- Use strict allowlists of trusted origins.
+- Avoid relying on partial string matching to verify URLs.
+- Remove outdated redirect entries and review configuration changes.
+- Prefer internal destination identifiers over arbitrary user-supplied URLs.
+- Test redirect behavior using authorized environments such as OWASP Juice Shop.
