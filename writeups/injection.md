@@ -1,6 +1,6 @@
 # Injection
 
-## OWASP Category: **A03:2021 – Injection**
+OWASP Category: **A03:2021 – Injection**
 
 This category covers vulnerabilities where untrusted user input is passed directly into an interpreter (SQL, NoSQL, OS commands, templates, etc.) without proper validation or sanitization, allowing an attacker to alter the intended logic of a query or command.
 
@@ -74,4 +74,68 @@ Confirmed via Chrome DevTools (Network tab):
 
 ---
 
-*(Remaining challenges — Login Bender, Login Jim, Database Schema, Christmas Special, Ephemeral Accountant, NoSQL DoS, NoSQL Manipulation, User Credentials, NoSQL Exfiltration, SSTi — to be appended below as they are solved.)*
+## 2. Login Bender ✅ (Solved)
+
+## Difficulty: ⭐⭐⭐
+**Description:** Log in with Bender's user account.
+
+### Vulnerability
+
+Same root cause as Login Admin: the login endpoint is vulnerable to SQL Injection because user input is concatenated directly into the SQL query instead of being parameterized. The additional difficulty in this challenge is that Bender's email address is not given — it has to be discovered first.
+
+### Reconnaissance
+
+Having already solved **Login Admin**, we gained access to the `/#/administration` panel. This page lists every registered user's email address directly, including `bender@juice-sh.op`. This is itself a privilege-escalation chain worth noting: one vulnerability (SQL injection into an admin session) exposed information (the full user list) that made the next vulnerability easier to exploit.
+
+### Exploitation Steps
+
+1. Logged in as admin (from the previous challenge) and navigated to `http://127.0.0.1:42000/#/administration`.
+2. Located Bender's email address in the **Registered Users** list: `bender@juice-sh.op`.
+3. Navigated to the Login page: `http://127.0.0.1:42000/#/login`
+4. In the **Email** field, entered the following payload:
+   ```
+   bender@juice-sh.op'--
+   ```
+5. In the **Password** field, entered any arbitrary value (e.g. `x`).
+6. Clicked **Log in**.
+
+### Why It Works
+
+Identical mechanism to Login Admin — the `'` closes the string literal and `--` comments out the rest of the query (including the password check), so the query effectively becomes:
+
+```sql
+SELECT * FROM Users WHERE email = 'bender@juice-sh.op'
+```
+
+returning Bender's user row and logging the attacker in as Bender without his password.
+
+### Verification
+
+Confirmed via Chrome DevTools (Network tab):
+- The `login` request returned **HTTP 200**.
+- The Response body contained a valid JWT `token` along with `"umail": "bender@juice-sh.op"`.
+- The Juice Shop score board displayed the green "Login Bender" success banner and marked the challenge as solved.
+
+### Screenshots
+
+| # | File | Description |
+|---|------|-------------|
+| 5 | `screenshots/injection/05-login-bender-admin-panel-emails.PNG` | Administration panel listing registered users, used to find Bender's email |
+| 6 | `screenshots/injection/06-login-bender-form.PNG` | Login form with the SQL injection payload entered into the Email field |
+| 7 | `screenshots/injection/07-login-bender-devtools-response.PNG` | DevTools Network → Response tab, showing the returned JWT token and `bender@juice-sh.op` session |
+| 8 | `screenshots/injection/08-login-bender-solved.PNG` | Score board confirming the Login Bender challenge solved |
+
+![Administration panel listing emails](../screenshots/injection/05-login-bender-admin-panel-emails.PNG)
+![Login form with payload](../screenshots/injection/06-login-bender-form.PNG)
+![DevTools response showing Bender session](../screenshots/injection/07-login-bender-devtools-response.PNG)
+![Score board solved](../screenshots/injection/08-login-bender-solved.PNG)
+
+### Mitigation
+
+- Use parameterized queries / prepared statements instead of string concatenation.
+- Restrict the Administration panel's user list to not expose full email addresses to any authenticated admin without additional safeguards (principle of least exposure).
+- Apply strict input validation on authentication fields.
+
+---
+
+*(Remaining challenges — Login Jim, Database Schema, Christmas Special, Ephemeral Accountant, NoSQL DoS, NoSQL Manipulation, User Credentials, NoSQL Exfiltration, SSTi — to be appended below as they are solved.)*
