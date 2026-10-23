@@ -125,7 +125,7 @@ Confirmed via Chrome DevTools (Network tab):
 | 7 | `screenshots/injection/07-login-bender-devtools-response.PNG` | DevTools Network → Response tab, showing the returned JWT token and `bender@juice-sh.op` session |
 | 8 | `screenshots/injection/08-login-bender-solved.PNG` | Score board confirming the Login Bender challenge solved |
 
-![Administration panel listing emails](../screenshots/injection/05-login-bender-admin-panel-emails.PNG)
+![Administration panel listing emails](../screenshots/injection/05-login-bender-admin-panel-emails.png)
 ![Login form with payload](../screenshots/injection/06-login-bender-form.PNG)
 ![DevTools response showing Bender session](../screenshots/injection/07-login-bender-devtools-response.PNG)
 ![Score board solved](../screenshots/injection/08-login-bender-solved.PNG)
