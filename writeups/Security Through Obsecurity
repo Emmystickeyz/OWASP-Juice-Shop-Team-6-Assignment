@@ -1,0 +1,60 @@
+# Security Through Obscurity
+
+**Category summary:** Security Through Obscurity occurs when an application relies on hiding information, functionality, or implementation details instead of enforcing proper security controls. Obscurity may make discovery harder, but it should never be the primary defense protecting sensitive functionality. The challenges below explore how hidden information and concealed data can be discovered through inspection and analysis.
+
+---
+
+## 1. Blockchain Hype
+
+**Difficulty:** ⭐⭐
+
+**Steps:** Investigated publicly accessible application resources to discover information about a cryptocurrency token sale before its intended announcement.
+
+**Why it worked:** Information that was expected to remain undiscovered until a later announcement could be found by inspecting the application's available resources.
+
+**Impact:** Relying on the assumption that users will not discover unpublished information can lead to premature disclosure, unfair advantages, and reduced trust.
+
+**Fix:** Do not rely on hidden URLs, obscure filenames, or unlinked resources to protect confidential information. Restrict access to unpublished content and ensure sensitive information is not included in public-facing resources.
+
+---
+
+## 2. Privacy Policy Inspection
+
+**Difficulty:** ⭐
+
+**Steps:** Examined the application's privacy policy and inspected its contents to identify the information relevant to the challenge.
+
+**Why it worked:** The challenge relied on finding relevant information by inspecting a resource that was publicly accessible rather than immediately obvious during ordinary navigation.
+
+**Impact:** Discovering a public privacy policy is not itself a security vulnerability. However, assuming users will not inspect publicly available resources is an unreliable security strategy.
+
+**Fix:** Ensure public documents contain only information intended for publication. Protect confidential information through appropriate access controls rather than assuming users will overlook it.
+
+---
+
+## 3. Steganography
+
+**Difficulty:** ⭐⭐
+
+**Steps:** Investigated an image associated with the challenge for concealed information. File-inspection tools such as `file`, `strings`, `exiftool`, and `binwalk` can help identify file formats, readable strings, metadata, and potentially embedded content.
+
+**Why it worked:** Information was concealed within or associated with a file and could be discovered through deliberate inspection rather than ordinary viewing.
+
+**Impact:** Concealed data may reveal challenge clues, internal details, or sensitive information if a file is publicly accessible and the hidden content is not properly protected.
+
+**Fix:** Never use concealment as a substitute for security. Remove sensitive metadata and embedded information before publishing files, and use appropriate access controls or encryption when confidentiality is required.
+
+---
+
+## Summary
+
+These challenges illustrate the limitations of relying on obscurity to protect information or application behavior.
+
+**Key lessons:**
+- Hidden does not mean secure.
+- Unlinked pages and obscure filenames can still be discovered.
+- Concealed data can be recovered through file inspection and analysis.
+- Publicly accessible resources should contain only information intended for public access.
+- Use authentication, authorization, access controls, and encryption where appropriate instead of relying on secrecy alone.
+- Document the exact behavior observed in the authorized OWASP Juice Shop environment.
+
