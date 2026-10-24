@@ -139,3 +139,65 @@ Confirmed via Chrome DevTools (Network tab):
 ---
 
 *(Remaining challenges — Login Jim, Database Schema, Christmas Special, Ephemeral Accountant, NoSQL DoS, NoSQL Manipulation, User Credentials, NoSQL Exfiltration, SSTi — to be appended below as they are solved.)*
+
+---
+
+## 3. Login Jim ✅ (Solved)
+
+## Difficulty: ⭐⭐⭐
+**Description:** Log in with Jim's user account.
+
+### Vulnerability
+
+Same SQL Injection flaw in the login endpoint as the previous two challenges. Jim's email, like Bender's, is not handed to the player directly and had to be found through reconnaissance.
+
+### Reconnaissance
+
+Jim's email address, `jim@juice-sh.op`, was already visible in the same Administration → Registered Users list used to find Bender's email in the previous challenge (accessible after solving Login Admin).
+
+### Exploitation Steps
+
+1. Navigated to the Login page: `http://127.0.0.1:42000/#/login`
+2. In the **Email** field, entered the following payload:
+   ```
+   jim@juice-sh.op'--
+   ```
+3. In the **Password** field, entered any arbitrary value (e.g. `x`).
+4. Clicked **Log in**.
+
+### Why It Works
+
+Same mechanism as the previous two challenges — the `'` closes the string literal and `--` comments out the rest of the query, so it effectively becomes:
+
+```sql
+SELECT * FROM Users WHERE email = 'jim@juice-sh.op'
+```
+
+returning Jim's user row and logging the attacker in as Jim without his password.
+
+### Verification
+
+- The Juice Shop UI displayed the green "Login Jim" success banner confirming the challenge solved.
+- The score board (filtered to the Injection category) shows **Login Admin**, **Login Bender**, and **Login Jim** all marked solved — 17/172 total challenges solved overall at this point.
+
+### Screenshots
+
+| # | File | Description |
+|---|------|-------------|
+| 9 | `screenshots/injection/09-login-jim-form.png` | Login form with the SQL injection payload entered into the Email field |
+| 10 | `screenshots/injection/10-login-jim-devtools-response.png` | DevTools Network → Response tab, showing the returned JWT token and `jim@juice-sh.op` session |
+| 11 | `screenshots/injection/11-login-jim-solved.png` | Score board showing the "Login Jim" success banner and challenge marked solved |
+
+![Login form with payload](../screenshots/injection/09-login-jim-form.png)
+![DevTools response showing Jim session](../screenshots/injection/10-login-jim-devtools-response.png)
+![Score board solved](../screenshots/injection/11-login-jim-solved.png)
+
+### Mitigation
+
+- Use parameterized queries / prepared statements instead of string concatenation.
+- Apply strict input validation on authentication fields.
+- Limit exposure of full user lists (including emails) even to admin-level panels where not strictly necessary.
+
+---
+
+*(Remaining challenges — Database Schema, Christmas Special, Ephemeral Accountant, NoSQL DoS, NoSQL Manipulation, User Credentials, NoSQL Exfiltration, SSTi — to be appended below as they are solved.)*
