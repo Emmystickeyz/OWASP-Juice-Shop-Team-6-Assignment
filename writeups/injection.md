@@ -188,9 +188,9 @@ returning Jim's user row and logging the attacker in as Jim without his password
 | 10 | `screenshots/injection/10-login-jim-devtools-response.png` | DevTools Network → Response tab, showing the returned JWT token and `jim@juice-sh.op` session |
 | 11 | `screenshots/injection/11-login-jim-solved.png` | Score board showing the "Login Jim" success banner and challenge marked solved |
 
-![Login form with payload](../screenshots/injection/09-login-jim-form.png)
-![DevTools response showing Jim session](../screenshots/injection/10-login-jim-devtools-response.png)
-![Score board solved](../screenshots/injection/11-login-jim-solved.png)
+![Login form with payload](../screenshots/injection/09-login-jim-form.PNG)
+![DevTools response showing Jim session](../screenshots/injection/10-login-jim-devtools-response.PNG)
+![Score board solved](../screenshots/injection/11-login-jim-solved.PNG)
 
 ### Mitigation
 
